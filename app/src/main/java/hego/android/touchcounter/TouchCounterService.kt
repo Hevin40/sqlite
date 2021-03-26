@@ -19,12 +19,14 @@ import android.view.WindowManager.LayoutParams.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
+import kotlinx.android.synthetic.main.activity_touch_analysis.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class TouchCounterService : Service(){
 
+    private lateinit var floatingText: TextView
     private var appName: String? = null
     var windowType = 0
     private var windowManager: WindowManager? = null
@@ -54,7 +56,7 @@ class TouchCounterService : Service(){
         val layoutParams = LinearLayout.LayoutParams(1, -1)
         linearLayout.setLayoutParams(layoutParams)
 
-        val floatingText = TextView(this)
+        floatingText = TextView(this)
         floatingText.setBackgroundColor(Color.WHITE)
         floatingText.setText("Okay")
         floatingText.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
@@ -105,6 +107,8 @@ class TouchCounterService : Service(){
                 val df = SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault())
                 val date: String = df.format(c)
 
+                setTodayData()
+
                 saveTouchIntoDatabase(date,day)
                 saveTouchIntoDatabaseForApps(date,day)
 
@@ -115,6 +119,27 @@ class TouchCounterService : Service(){
             }
         })
 
+    }
+
+    private fun setTodayData() {
+        val sqLiteDatabase = databaseHalper.readableDatabase
+        val rawQuery = sqLiteDatabase.rawQuery("select * from touchCounter", null, null)
+        while (rawQuery.moveToNext()){
+            val date = rawQuery.getString(1)
+            if (date.equals(getCurrentDate())){
+                val touch = rawQuery.getString(3)
+                floatingText.text = touch
+            }else{
+                Log.e(TAG, "setData: date not equals current date")
+            }
+        }
+    }
+
+    private fun getCurrentDate() : String{
+        val c: Date = Calendar.getInstance().getTime()
+        val df = SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault())
+        val formattedDate: String = df.format(c)
+        return formattedDate
     }
 
     private fun saveTouchIntoDatabaseForApps(date: String, day: Int) {
