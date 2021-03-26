@@ -3,6 +3,7 @@ package hego.android.touchcounter;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -24,11 +25,17 @@ public class AppDetectorService extends AccessibilityService {
                 final PackageManager pm = getApplicationContext().getPackageManager();
                 ApplicationInfo ai;
                 try {
-                    ai = pm.getApplicationInfo(this.getPackageName(), 0);
+                    ai = pm.getApplicationInfo(packageName, 0);
                 } catch (final PackageManager.NameNotFoundException e) {
                     ai = null;
                 }
                 String applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
+                Log.e(TAG, "onAccessibilityEvent: "+applicationName );
+
+                Intent intent = new Intent("appName");
+                intent.putExtra("appName",applicationName);
+                sendBroadcast(intent);
+
             }
         }
     }

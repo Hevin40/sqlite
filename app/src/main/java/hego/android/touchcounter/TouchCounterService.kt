@@ -5,7 +5,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.os.Build
@@ -25,6 +28,7 @@ import java.util.*
 
 class TouchCounterService : Service(){
 
+    private var appName: String? = null
     var windowType = 0
     private var windowManager: WindowManager? = null
     private var linearLayout: LinearLayout? = null
@@ -38,6 +42,15 @@ class TouchCounterService : Service(){
         super.onCreate()
 
         databaseHalper = DatabaseHalper(this)
+
+        val broadcastReceiver = object : BroadcastReceiver(){
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (intent != null && intent.action.equals("appName")){
+                    appName = intent.getStringExtra("appName")
+                }
+            }
+        }
+        registerReceiver(broadcastReceiver, IntentFilter("appName"))
 
 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
