@@ -1,10 +1,7 @@
 package hego.android.touchcounter
 
 import android.R
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -31,7 +28,6 @@ class TouchCounterService : Service(){
     private var appName: String? = null
     var windowType = 0
     private var windowManager: WindowManager? = null
-    private var linearLayout: LinearLayout? = null
     lateinit var databaseHalper: DatabaseHalper
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -51,7 +47,6 @@ class TouchCounterService : Service(){
             }
         }
         registerReceiver(broadcastReceiver, IntentFilter("appName"))
-
 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         val linearLayout = LinearLayout(this)
@@ -110,24 +105,59 @@ class TouchCounterService : Service(){
                 val df = SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault())
                 val date: String = df.format(c)
 
-                var sqLiteDatabase = databaseHalper.readableDatabase
-                val rawQuery = sqLiteDatabase.rawQuery("select * from touchCounter where day = '" + day + "'", null, null)
+                saveTouchIntoDatabase(date,day)
+                saveTouchIntoDatabaseForApps(date,day)
 
-                if (rawQuery.moveToNext()) {
-                    var lastValue = rawQuery.getString(3).toInt()
-                    Log.e(TAG, "onTouch: available last value : "+lastValue )
-                    var increment = lastValue + 1
-                    databaseHalper.insertUpdateData(Data(date, day.toString(), increment.toString()))
-                    Log.e(TAG, "onTouch: available last value plus : "+increment )
-                } else {
-                    databaseHalper.insertUpdateData(Data(date, day.toString(), "1"))
-                    Log.e(TAG, "onTouch: not available", )
-                }
+                val intent = Intent("touch")
+                sendBroadcast(intent)
 
                 return false
             }
         })
 
+    }
+
+    private fun saveTouchIntoDatabaseForApps(date: String, day: Int) {
+        if (isMyServiceRunning(AppDetectorService::class.java)){
+            val sqLiteDatabase = databaseHalper.readableDatabase
+            val rawQuery = sqLiteDatabase.rawQuery("select * from appsTouchCounter where app = '" + appName + "' and day = "+day+"   ", null, null)
+            if (rawQuery.moveToNext()) {
+                val lastValue = rawQuery.getString(4).toInt()
+                Log.e(TAG, "onTouch: available last value : "+lastValue )
+                val increment = lastValue + 1
+                databaseHalper.insertUpdateDataApps(DataApps(date, day.toString(),appName, increment.toString()))
+                Log.e(TAG, "onTouch: available last value plus : "+increment )
+            } else {
+                databaseHalper.insertUpdateDataApps(DataApps(date, day.toString(), appName,"0"))
+                Log.e(TAG, "onTouch: not available", )
+            }
+        }
+    }
+
+    private fun saveTouchIntoDatabase(date: String, day: Int) {
+        val sqLiteDatabase = databaseHalper.readableDatabase
+        val rawQuery = sqLiteDatabase.rawQuery("select * from touchCounter where day = '" + day + "'", null, null)
+
+        if (rawQuery.moveToNext()) {
+            val lastValue = rawQuery.getString(3).toInt()
+            Log.e(TAG, "onTouch: available last value : "+lastValue )
+            val increment = lastValue + 1
+            databaseHalper.insertUpdateData(Data(date, day.toString(), increment.toString()))
+            Log.e(TAG, "onTouch: available last value plus : "+increment )
+        } else {
+            databaseHalper.insertUpdateData(Data(date, day.toString(), "0"))
+            Log.e(TAG, "onTouch: not available", )
+        }
+    }
+
+    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

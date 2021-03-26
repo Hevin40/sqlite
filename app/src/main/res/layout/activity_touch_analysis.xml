@@ -20,10 +20,10 @@
         />
 
     <TextView
-        android:id="@+id/tommoroTouch"
+        android:id="@+id/yesterdayTouch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="tommoro touch"
+        android:text="Yesterday touch"
         android:padding="10dp"
         android:textSize="20sp"
         android:background="#DDDDDD"
@@ -53,7 +53,7 @@
         />
 
     <TextView
-        android:id="@+id/avg"
+        android:id="@+id/avgTouch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Average Touch"
