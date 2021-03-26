@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TouchAnalysisActivity">
+
+    <TextView
+        android:id="@+id/todayTouch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="today touch"
+        android:padding="10dp"
+        android:textSize="20sp"
+        android:background="#DDDDDD"
+        android:layout_margin="10dp"
+        />
+
+    <TextView
+        android:id="@+id/tommoroTouch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="tommoro touch"
+        android:padding="10dp"
+        android:textSize="20sp"
+        android:background="#DDDDDD"
+        android:layout_margin="10dp"
+        />
+
+    <TextView
+        android:id="@+id/totalTouch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="total touch"
+        android:padding="10dp"
+        android:textSize="20sp"
+        android:background="#DDDDDD"
+        android:layout_margin="10dp"
+        />
+
+    <TextView
+        android:id="@+id/mostCounted"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="most counted"
+        android:padding="10dp"
+        android:textSize="20sp"
+        android:background="#DDDDDD"
+        android:layout_margin="10dp"
+        />
+
+    <TextView
+        android:id="@+id/avg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Average Touch"
+        android:padding="10dp"
+        android:textSize="20sp"
+        android:background="#DDDDDD"
+        android:layout_margin="10dp"
+        />
+
+    <TextView
+        android:id="@+id/totalDays"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="total days"
+        android:padding="10dp"
+        android:textSize="20sp"
+        android:background="#DDDDDD"
+        android:layout_margin="10dp"
+        />
+
+
+</LinearLayout>
+
